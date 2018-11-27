@@ -46,12 +46,53 @@ Module based on the awesome [sitemap](https://github.com/ekalinin/sitemap.js) pa
 
 ## Options
 
+The options can be an `object` for a single sitemap or an `array of objects` if you need to create multiple sitemaps.
+
+Single sitemap:
+```js
+  sitemap: {
+    path: '/sitemap.xml',
+    hostname: 'https://example.com',
+    gzip: true,
+    routes: [
+      '/page/1',
+      '/page/2',
+    ]
+  }
+```
+
+Multiple sitemaps:
+```js
+  sitemap: [
+    {
+      path: '/sitemap.xml',
+      hostname: 'https://example.com',
+      gzip: true,
+      routes: [
+        '/page/1',
+        '/page/2',
+      ]
+    },
+    {
+      path: '/second-sitemap.xml',
+      hostname: 'https://example.com',
+      gzip: true,
+      routes: [
+        '/page/3',
+        '/page/4',
+      ]
+    },
+  ]
+```
+
+## Sitemap options
+
 ### `exclude`
 The `exclude` parameter is an array of [glob patterns](https://github.com/isaacs/minimatch#features) to exclude static routes from the generated sitemap.
 
 ### `routes`
 The `routes` parameter follows the same way than the `generate` [configuration](https://nuxtjs.org/api/configuration-generate).
-   
+
 See as well the [routes](#routes-1) examples below.
 
 ### `path`
@@ -60,7 +101,7 @@ See as well the [routes](#routes-1) examples below.
 Where serve/generate sitemap file
 
 ### `hostname`
-- Default: 
+- Default:
   - `hostname()` for generate mode
   - Dynamically based on request url for middleware mode
 
