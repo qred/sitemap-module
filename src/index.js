@@ -39,10 +39,6 @@ module.exports = function module (moduleOptions) {
     sitemap.pathGzip = (sitemap.gzip) ? `${sitemap.path}.gz` : sitemap.path
     const gzipGeneratePath = path.resolve(this.options.srcDir, path.join(this.options.dir.static || 'static', sitemap.pathGzip))
 
-    // Ensure no generated file exists
-    fs.removeSync(xmlGeneratePath)
-    fs.removeSync(gzipGeneratePath)
-
     sitemap.cache = null
 
     // TODO find a better way to detect if is a "build", "start" or "generate" command
@@ -56,10 +52,21 @@ module.exports = function module (moduleOptions) {
 
     // Extend routes
     this.extendRoutes(routes => {
+      // Ensure no generated file exists
+      fs.removeSync(xmlGeneratePath)
+      fs.removeSync(gzipGeneratePath)
+
       // Map to path and filter dynamic routes
       let staticRoutes = routes
         .map(r => r.path)
         .filter(r => !r.includes(':') && !r.includes('*'))
+
+      // TODO on build process only
+      // Save static routes
+      if (!this.options.dev && sitemap.generate) {
+        fs.ensureDirSync(path.resolve(this.options.buildDir, 'dist'))
+        fs.writeJsonSync(jsonStaticRoutesPath, staticRoutes)
+      }
 
       // Exclude routes
       sitemap.exclude.forEach(pattern => {
@@ -74,11 +81,6 @@ module.exports = function module (moduleOptions) {
       }
 
       if (!this.options.dev) {
-        // TODO on build process only
-        // Save static routes
-        fs.ensureDirSync(path.resolve(this.options.buildDir, 'dist'))
-        fs.writeJsonSync(jsonStaticRoutesPath, staticRoutes)
-
         // TODO on generate process only and not on build process
         if (sitemap.generate) {
           (async () => {
